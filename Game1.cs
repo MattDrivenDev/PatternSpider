@@ -5,6 +5,8 @@ using System;
 
 namespace PatternSpider;
 
+public enum Direction{Left,Right}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -12,6 +14,7 @@ public class Game1 : Game
     private Texture2D _spiderSpriteSheet;
     private Rectangle _spiderRectangle;
     private Int32 _spiderFrame;
+    private Direction _spiderDirection=Direction.Right;
 
     public Game1()
     {
@@ -54,11 +57,13 @@ public class Game1 : Game
         {
             _spiderRectangle.X += 8;
             _spiderFrame++;
+            _spiderDirection=Direction.Right;
         }
         if(Keyboard.GetState().IsKeyDown(Keys.Left))
         {
             _spiderRectangle.X -= 8;
             _spiderFrame--;
+            _spiderDirection=Direction.Left;
         }
 
         
@@ -86,7 +91,8 @@ public class Game1 : Game
             _spiderSpriteSheet, 
             _spiderRectangle, 
             new Rectangle(0,58*_spiderFrame,128,58),
-            Color.Silver);
+            Color.White, 
+            0, new Vector2(0,0), _spiderDirection==Direction.Left?SpriteEffects.FlipHorizontally:SpriteEffects.None,0);
         _spriteBatch.End();
 
         base.Draw(gameTime);
