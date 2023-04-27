@@ -56,12 +56,20 @@ public class Game1 : Game
             _spiderRectangle.X += 8;
             _spiderFrame++;
             _spiderDirection=Direction.Right;
+
+            if(_spiderRectangle.X+128-16>_graphics.PreferredBackBufferWidth){
+                _spiderRectangle.X-=8;
+            }
         }
         if(Keyboard.GetState().IsKeyDown(Keys.Left))
         {
             _spiderRectangle.X -= 8;
             _spiderFrame--;
             _spiderDirection=Direction.Left;
+
+            if(_spiderRectangle.X<=-16){
+                _spiderRectangle.X+=8;
+            }
         }
 
         
