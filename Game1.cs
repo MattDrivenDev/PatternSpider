@@ -15,6 +15,7 @@ public class Game1 : Game
     private Rectangle _spiderRectangle;
     private Int32 _spiderFrame;
     private Direction _spiderDirection=Direction.Right;
+    private Texture2D _background;
 
     public Game1()
     {
@@ -31,18 +32,15 @@ public class Game1 : Game
         base.Initialize();
     }
 
-    private void LoadSpriteSpiderSpriteSheet()
-    {
-        _spiderSpriteSheet = Content.Load<Texture2D>("spider128");
-    }
-
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // TODO: use this.Content to load your game content here
         
-        LoadSpriteSpiderSpriteSheet();
+
+        _background = Content.Load<Texture2D>("background1");
+        _spiderSpriteSheet = Content.Load<Texture2D>("spider128");
         _spiderRectangle = new Rectangle(100, _graphics.PreferredBackBufferHeight-58, 128, 58);
         _spiderFrame=0;
     }
@@ -87,6 +85,19 @@ public class Game1 : Game
 
         // TODO: Add your drawing code here
         _spriteBatch.Begin();
+
+        // 920 x 540
+        // 216 x 188 (108 x 94)
+        for(var x = 0; x < 6; x++)
+        for(var y = 0; y < 6; y++)
+        {
+            var r = new Rectangle(x*216,y*188,216,188);
+            _spriteBatch.Draw(
+                _background,
+                r,
+                Color.White*1f);
+        }
+
         _spriteBatch.Draw(
             _spiderSpriteSheet, 
             _spiderRectangle, 
