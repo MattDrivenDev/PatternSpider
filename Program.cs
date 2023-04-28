@@ -1,3 +1,3 @@
 ﻿
-using var game = new PatternSpider.Game1();
+using var game = new PatternSpider.PatternSpiderGame();
 game.Run();
