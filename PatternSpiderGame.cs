@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace PatternSpider;
 
@@ -13,6 +14,7 @@ public class PatternSpiderGame : Game
     private SpriteBatch _spriteBatch;
     private Texture2D _background;
     private Lulu _lulu;
+    private Texture2D _breakSprite;
 
     public PatternSpiderGame()
     {
@@ -36,6 +38,7 @@ public class PatternSpiderGame : Game
         // TODO: use this.Content to load your game content here
         _background = Content.Load<Texture2D>("background1");
         var spiderSpriteSheet = Content.Load<Texture2D>("spider128");
+        _breakSprite = Content.Load<Texture2D>("break");
 
         World.Ceiling = new Rectangle(0, -8, _screenWidth, 8);
         World.Floor = new Rectangle(0, _screenHeight - 4, _screenWidth, 8);
@@ -43,6 +46,24 @@ public class PatternSpiderGame : Game
         World.RightWall = new Rectangle(_screenWidth, 0, 8, _screenHeight);        
 
         _lulu = new Lulu(new Vector2(_screenWidth / 2, _screenHeight / 2), spiderSpriteSheet);
+
+        CreateShatterings(7);
+    }
+
+    private void CreateShatterings(Int32 count)
+    {
+        for (var n = 0; n < count; n++)
+        {
+            var x = new Random().Next(0, 7);
+            var y = new Random().Next(0, 4);
+            var position = new Vector2(108 * (x + 1), 94 * (y + 1));
+            if (!(y % 2 == 0))
+            {
+                position.X -= 108 / 2;
+            }
+            var shatter = new Shatter(position, _breakSprite);
+            World.Shatterings[x, y] = shatter;
+        }
     }
 
     protected override void Update(GameTime gameTime)
@@ -75,6 +96,16 @@ public class PatternSpiderGame : Game
                 _background,
                 r,
                 Color.White * 1f);
+        }
+
+        for (var x = 0; x < 7; x++)
+        for (var y = 0; y < 4; y++)
+        {
+            var shatter = World.Shatterings[x, y];
+            if (shatter != null)
+            {
+                shatter.Draw(_spriteBatch);
+            }
         }
 
         _lulu.Draw(_spriteBatch);
