@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace PatternSpider;
 
@@ -15,6 +14,8 @@ public class PatternSpiderGame : Game
     private Texture2D _background;
     private Lulu _lulu;
     private Texture2D _breakSprite;
+    private const Double ShatterInterval = 3f;
+    private Double _lastShattering = 0f;
 
     public PatternSpiderGame()
     {
@@ -47,20 +48,27 @@ public class PatternSpiderGame : Game
 
         _lulu = new Lulu(new Vector2(_screenWidth / 2, _screenHeight / 2), spiderSpriteSheet);
 
-        CreateShatterings(7);
+        CreateShatterings(5);
     }
 
     private void CreateShatterings(Int32 count)
     {
         for (var n = 0; n < count; n++)
         {
-            var x = new Random().Next(0, 7);
-            var y = new Random().Next(0, 4);
+            var x = new Random().Next(0, 8);
+            var y = new Random().Next(0, 5);
+
+            if (World.Shatterings[x, y] != null)
+            {
+                continue;
+            }
+
             var position = new Vector2(108 * (x + 1), 94 * (y + 1));
             if (!(y % 2 == 0))
             {
                 position.X -= 108 / 2;
             }
+
             var shatter = new Shatter(position, _breakSprite);
             World.Shatterings[x, y] = shatter;
         }
@@ -75,6 +83,30 @@ public class PatternSpiderGame : Game
         }
 
         _lulu.Update(gameTime, Keyboard.GetState());
+
+        for (var x = 0; x <= 7; x++)
+        for (var y = 0; y <= 4; y++)
+        {
+            var shatter = World.Shatterings[x, y];
+            if (shatter != null)
+            {
+                if (_lulu.Fixes(shatter))
+                {
+                    World.Shatterings[x, y] = null;
+                }
+            }
+        }
+
+        var total = _lastShattering + gameTime.ElapsedGameTime.TotalSeconds;
+        if (total > ShatterInterval)
+        {
+            CreateShatterings(3);
+            _lastShattering = 0f;
+        }
+        else
+        {
+            _lastShattering = total;
+        }
         
         base.Update(gameTime);
     }
@@ -91,15 +123,15 @@ public class PatternSpiderGame : Game
         for(var x = 0; x < 6; x++)
         for(var y = 0; y < 6; y++)
         {
-            var r = new Rectangle(x*216,y*188,216,188);
+            var r = new Rectangle(x * 216, y * 188, 216, 188);
             _spriteBatch.Draw(
                 _background,
                 r,
                 Color.White * 1f);
         }
 
-        for (var x = 0; x < 7; x++)
-        for (var y = 0; y < 4; y++)
+        for (var x = 0; x <= 7; x++)
+        for (var y = 0; y <= 4; y++)
         {
             var shatter = World.Shatterings[x, y];
             if (shatter != null)

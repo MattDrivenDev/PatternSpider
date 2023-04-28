@@ -141,6 +141,11 @@ public class Lulu
         WrapAnimation();
     }
     
+    public Boolean Fixes(Shatter shatter)
+    {
+        return shatter.Hitbox.Intersects(PortraitHitbox);
+    }
+
     private void WrapAnimation()
     {
         if(_frame >= 25)
