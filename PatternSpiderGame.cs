@@ -5,27 +5,22 @@ using System;
 
 namespace PatternSpider;
 
-public enum Direction{Left,Right}
-
-public class Game1 : Game
+public class PatternSpiderGame : Game
 {
+    private const Int32 _screenWidth = 920, _screenHeight = 540;
+    private const Int32 _gravity = 12;
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private Texture2D _spiderSpriteSheet;
-    private Int32 _spiderFrame;
-    private Direction _spiderDirection=Direction.Right;
     private Texture2D _background;
-    private Rectangle _leftWall, _rightWall, _floor;
-    private Boolean _climbing;
     private Lulu _lulu;
 
-    public Game1()
+    public PatternSpiderGame()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content"; 
         IsMouseVisible = true;
-        _graphics.PreferredBackBufferWidth = 920;
-        _graphics.PreferredBackBufferHeight = 540;
+        _graphics.PreferredBackBufferWidth = _screenWidth;
+        _graphics.PreferredBackBufferHeight = _screenHeight;
     }
 
     protected override void Initialize()
@@ -39,30 +34,27 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // TODO: use this.Content to load your game content here
-        
-
         _background = Content.Load<Texture2D>("background1");
-        _spiderSpriteSheet = Content.Load<Texture2D>("spider128");
-        _spiderFrame=0;
-        _floor=new Rectangle(0, _graphics.PreferredBackBufferHeight-4, _graphics.PreferredBackBufferWidth, 8);
-        _leftWall=new Rectangle(-8, 0, 8, _graphics.PreferredBackBufferHeight);
-        _rightWall=new Rectangle(_graphics.PreferredBackBufferWidth, 0, 8, _graphics.PreferredBackBufferHeight);
-        
-        _lulu = new Lulu(new Vector2(100, _graphics.PreferredBackBufferHeight-58), _spiderSpriteSheet);
+        var spiderSpriteSheet = Content.Load<Texture2D>("spider128");
+
+        World.Ceiling = new Rectangle(0, -8, _screenWidth, 8);
+        World.Floor = new Rectangle(0, _screenHeight - 4, _screenWidth, 8);
+        World.LeftWall = new Rectangle(-8, 0, 8, _screenHeight);
+        World.RightWall = new Rectangle(_screenWidth, 0, 8, _screenHeight);        
+
+        _lulu = new Lulu(new Vector2(_screenWidth / 2, _screenHeight / 2), spiderSpriteSheet);
     }
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed 
+            || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        {
             Exit();
-        
+        }
+
         _lulu.Update(gameTime, Keyboard.GetState());
         
-        // TODO: Add your update logic here
-
-        
-
-
         base.Update(gameTime);
     }
 
@@ -82,7 +74,7 @@ public class Game1 : Game
             _spriteBatch.Draw(
                 _background,
                 r,
-                Color.White*1f);
+                Color.White * 1f);
         }
 
         _lulu.Draw(_spriteBatch);
